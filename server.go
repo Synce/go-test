@@ -13,6 +13,9 @@ type Product struct {
 	Price       float32 `json:"price"`
 }
 
+var errorMessage =  "Invalid product ID"
+var errorMessage2 =  "Product not found"
+var path = "/products/:id"
 var products = []Product{
 	{ID: 1, Name: "Product 1", Description: "Lorem ipsum", Price: 2.50},
 	{ID: 2, Name: "Product 2", Description: "Lorem ipsum", Price: 5.00},
@@ -21,7 +24,7 @@ var products = []Product{
 func getProduct(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid product ID")
+		return c.String(http.StatusBadRequest,errorMessage)
 	}
 
 	for _, product := range products {
@@ -30,7 +33,7 @@ func getProduct(c echo.Context) error {
 		}
 	}
 
-	return c.String(http.StatusNotFound, "Product not found")
+	return c.String(http.StatusNotFound, errorMessage)
 }
 
 func getProducts(c echo.Context) error {
@@ -52,7 +55,7 @@ func createProduct(c echo.Context) error {
 func updateProduct(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid product ID")
+		return c.String(http.StatusBadRequest, errorMessage)
 	}
 
 	for i, product := range products {
@@ -69,13 +72,13 @@ func updateProduct(c echo.Context) error {
 		}
 	}
 
-	return c.String(http.StatusNotFound, "Product not found")
+	return c.String(http.StatusNotFound, errorMessage2)
 }
 
 func deleteProduct(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid product ID")
+		return c.String(http.StatusBadRequest, errorMessage)
 	}
 
 	for i, product := range products {
@@ -85,17 +88,17 @@ func deleteProduct(c echo.Context) error {
 		}
 	}
 
-	return c.String(http.StatusNotFound, "Product not found")
+	return c.String(http.StatusNotFound, errorMessage2)
 }
 
 func main() {
 	e := echo.New()
 
 	e.GET("/products", getProducts)
-	e.GET("/products/:id", getProduct)
+	e.GET(path, getProduct)
 	e.POST("/products", createProduct)
-	e.PUT("/products/:id", updateProduct)
-	e.DELETE("/products/:id", deleteProduct)
+	e.PUT(path, updateProduct)
+	e.DELETE(path, deleteProduct)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
